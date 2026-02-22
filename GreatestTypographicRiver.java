@@ -166,19 +166,88 @@ public class GreatestTypographicRiver {
     
     
     public static void main(String[] args) {
-        String[] testFiles = {
-            "inputSmall.txt",
-            "inputSmall2.txt",
-            "inputSmall3.txt",
-            "input500.txt",
-            "input1500.txt",
-            "input5000.txt",
-            "input10000.txt"
+        java.util.Scanner scanner = new java.util.Scanner(System.in);
+        
+        String[][] testCategories = {
+            {"Casos básicos", "inputSmall.txt", "inputSmall2.txt", "inputSmall3.txt"},
+            {"CasosDePruebaA-Z", 
+            "CasosDePruebaA-Z/a-z500.txt",
+            "CasosDePruebaA-Z/a-z1000.txt",
+            "CasosDePruebaA-Z/a-z20000.txt",
+            "CasosDePruebaA-Z/a-z50000.txt",
+            "CasosDePruebaA-Z/a-z100000.txt"
+            },
+            {"CasosDePruebaCicero",
+            "CasosDePruebaCicero/cicero500.txt",
+            "CasosDePruebaCicero/cicero1000.txt",
+            "CasosDePruebaCicero/cicero20000.txt",
+            "CasosDePruebaCicero/cicero50000.txt",
+            "CasosDePruebaCicero/cicero100000.txt"
+            },
+            {"CasosDePruebaLiLanguages",
+            "CasosDePruebaLiLanguages/LiLang500.txt",
+            "CasosDePruebaLiLanguages/LiLang1000.txt",
+            "CasosDePruebaLiLanguages/LiLang20000.txt",
+            "CasosDePruebaLiLanguages/LiLang50000.txt",
+            "CasosDePruebaLiLanguages/LiLang100000.txt"
+            },
+            {"CasosDePruebaLoremIpsum",
+            "CasosDePruebaLoremIpsum/loremipsum500.txt",
+            "CasosDePruebaLoremIpsum/loremipsum1000.txt",
+            "CasosDePruebaLoremIpsum/loremipsum20000.txt",
+            "CasosDePruebaLoremIpsum/loremipsum50000.txt",
+            "CasosDePruebaLoremIpsum/loremipsum100000.txt"
+            }
         };
         
-        for (String fileName : testFiles) {
+        while (true) {
+            System.out.println("\n╔════════════════════════════════════════════════════════╗");
+            System.out.println("║  MENÚ DE CASOS DE PRUEBA - V1");
+            System.out.println("╚════════════════════════════════════════════════════════╝");
+            System.out.println("\n0. Probar TODOS los casos");
+            for (int i = 0; i < testCategories.length; i++) {
+                System.out.println((i + 1) + ". " + testCategories[i][0]);
+            }
+            System.out.println((testCategories.length + 1) + ". Salir");
+            
+            System.out.print("\nSeleccione una opción: ");
+            int opcion = scanner.nextInt();
+            
+            if (opcion == testCategories.length + 1) {
+                System.out.println("\n¡Hasta luego!");
+                break;
+            }
+            
+            if (opcion == 0) {
+                // Probar todos
+                for (String[] category : testCategories) {
+                    probarCategoria(category);
+                }
+            } else if (opcion >= 1 && opcion <= testCategories.length) {
+                // Probar categoría específica
+                probarCategoria(testCategories[opcion - 1]);
+            } else {
+                System.out.println("⚠️ Opción inválida");
+            }
+        }
+        
+        scanner.close();
+    }
+
+    // ============================================================
+    // Método auxiliar para probar una categoría
+    // ============================================================
+    private static void probarCategoria(String[] category) {
+        String categoryName = category[0];
+        System.out.println("\n");
+        System.out.println("╔════════════════════════════════════════════════════════╗");
+        System.out.println("║  " + categoryName);
+        System.out.println("╚════════════════════════════════════════════════════════╝");
+        
+        for (int i = 1; i < category.length; i++) {
+            String fileName = category[i];
             try {
-                System.out.println("========================================");
+                System.out.println("\n========================================");
                 System.out.println("Probando: " + fileName);
                 System.out.println("========================================");
                 
@@ -199,7 +268,6 @@ public class GreatestTypographicRiver {
                 // Medir tiempo de ejecución
                 long startTime = System.currentTimeMillis();
                 
-                // AQUÍ USAMOS EL NUEVO MÉTODO
                 int[] result = findOptimalWidthAndRiver(texto);
                 int optimalWidth = result[0];
                 int longestRiver = result[1];
@@ -219,15 +287,13 @@ public class GreatestTypographicRiver {
                     printMatrix(matriz);
                 }
                 
-                System.out.println();
-                
             } catch (java.io.FileNotFoundException e) {
-                System.out.println("Archivo no encontrado: " + fileName);
+                System.out.println("⚠️ Archivo no encontrado: " + fileName);
             } catch (java.io.IOException e) {
-                System.out.println("Error leyendo archivo: " + fileName);
+                System.out.println("⚠️ Error leyendo archivo: " + fileName);
                 e.printStackTrace();
             } catch (Exception e) {
-                System.out.println("Error procesando: " + fileName);
+                System.out.println("⚠️ Error procesando: " + fileName);
                 e.printStackTrace();
             }
         }

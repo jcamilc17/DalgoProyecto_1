@@ -184,43 +184,117 @@ public class GreatestTypographicRiverV2 {
 
     // ============================================================
     // Método principal para pruebas
-    // Mide tiempo y ejecuta el algoritmo sobre varios archivos
+    // Permite elegir qué categoría de casos probar
     // ============================================================
     public static void main(String[] args) {
-        String[] testFiles = {
-                "inputSmall.txt",
-                "inputSmall2.txt",
-                "inputSmall3.txt",
-                "input500.txt",
-                "input1500.txt",
-                "input5000.txt",
-                "input10000.txt"
+        java.util.Scanner scanner = new java.util.Scanner(System.in);
+        
+        String[][] testCategories = {
+            {"Casos básicos", "inputSmall.txt", "inputSmall2.txt", "inputSmall3.txt"},
+            {"CasosDePruebaA-Z", 
+            "CasosDePruebaA-Z/a-z500.txt",
+            "CasosDePruebaA-Z/a-z1000.txt",
+            "CasosDePruebaA-Z/a-z20000.txt",
+            "CasosDePruebaA-Z/a-z50000.txt",
+            "CasosDePruebaA-Z/a-z100000.txt"
+            },
+            {"CasosDePruebaCicero",
+            "CasosDePruebaCicero/cicero500.txt",
+            "CasosDePruebaCicero/cicero1000.txt",
+            "CasosDePruebaCicero/cicero20000.txt",
+            "CasosDePruebaCicero/cicero50000.txt",
+            "CasosDePruebaCicero/cicero100000.txt"
+            },
+            {"CasosDePruebaLiLanguages",
+            "CasosDePruebaLiLanguages/LiLang500.txt",
+            "CasosDePruebaLiLanguages/LiLang1000.txt",
+            "CasosDePruebaLiLanguages/LiLang20000.txt",
+            "CasosDePruebaLiLanguages/LiLang50000.txt",
+            "CasosDePruebaLiLanguages/LiLang100000.txt"
+            },
+            {"CasosDePruebaLoremIpsum",
+            "CasosDePruebaLoremIpsum/loremipsum500.txt",
+            "CasosDePruebaLoremIpsum/loremipsum1000.txt",
+            "CasosDePruebaLoremIpsum/loremipsum20000.txt",
+            "CasosDePruebaLoremIpsum/loremipsum50000.txt",
+            "CasosDePruebaLoremIpsum/loremipsum100000.txt"
+            }
         };
-        for (String fileName : testFiles) {
+        
+        while (true) {
+            System.out.println("\n╔════════════════════════════════════════════════════════╗");
+            System.out.println("║  MENÚ DE CASOS DE PRUEBA");
+            System.out.println("╚════════════════════════════════════════════════════════╝");
+            System.out.println("\n0. Probar TODOS los casos");
+            for (int i = 0; i < testCategories.length; i++) {
+                System.out.println((i + 1) + ". " + testCategories[i][0]);
+            }
+            System.out.println((testCategories.length + 1) + ". Salir");
+            
+            System.out.print("\nSeleccione una opción: ");
+            int opcion = scanner.nextInt();
+            
+            if (opcion == testCategories.length + 1) {
+                System.out.println("\n¡Hasta luego!");
+                break;
+            }
+            
+            if (opcion == 0) {
+                // Probar todos
+                for (String[] category : testCategories) {
+                    probarCategoria(category);
+                }
+            } else if (opcion >= 1 && opcion <= testCategories.length) {
+                // Probar categoría específica
+                probarCategoria(testCategories[opcion - 1]);
+            } else {
+                System.out.println("⚠️ Opción inválida");
+            }
+        }
+        
+        scanner.close();
+    }
+
+    // ============================================================
+    // Método auxiliar para probar una categoría
+    // ============================================================
+    private static void probarCategoria(String[] category) {
+        String categoryName = category[0];
+        System.out.println("\n╔════════════════════════════════════════════════════════╗");
+        System.out.println("║  " + categoryName);
+        System.out.println("╚════════════════════════════════════════════════════════╝");
+        
+        for (int i = 1; i < category.length; i++) {
+            String fileName = category[i];
             try {
-                System.out.println("========================================");
-                System.out.println("Probando: " + fileName);
-                System.out.println("========================================");
+                System.out.println("\n--- " + fileName + " ---");
+                
                 // Leer archivo de entrada
                 java.io.BufferedReader reader =
                         new java.io.BufferedReader(
                                 new java.io.FileReader(fileName));
                 String texto = reader.readLine();
                 reader.close();
+                
                 if (texto == null || texto.isEmpty()) {
                     System.out.println("Archivo vacío o no encontrado");
                     continue;
                 }
+                
                 long startTime = System.currentTimeMillis();
                 // Ejecutar búsqueda del ancho óptimo
                 int[] result = findOptimalWidthAndRiver(texto);
                 long endTime = System.currentTimeMillis();
-                System.out.println("Ancho óptimo: " + result[0]);
-                System.out.println("Río más largo: " + result[1]);
-                System.out.println("Tiempo: "
-                        + (endTime - startTime) + " ms");
-                System.out.println();
+                
+                System.out.println("Longitud: " + texto.length() + " chars | " +
+                                "Ancho: " + result[0] + " | " +
+                                "Río: " + result[1] + " | " +
+                                "Tiempo: " + (endTime - startTime) + " ms");
+                
+            } catch (java.io.FileNotFoundException e) {
+                System.out.println("⚠️ Archivo no encontrado: " + fileName);
             } catch (Exception e) {
+                System.out.println("⚠️ Error: " + fileName);
                 e.printStackTrace();
             }
         }

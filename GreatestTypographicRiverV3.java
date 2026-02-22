@@ -253,21 +253,87 @@ public class GreatestTypographicRiverV3 {
     }
 
     public static void main(String[] args) {
-        String[] testFiles = {
-            "inputSmall.txt",
-            "inputSmall2.txt",
-            "inputSmall3.txt",
-            "input500.txt",
-            "input1500.txt",
-            "input5000.txt",
-            "input10000.txt"
+        java.util.Scanner scanner = new java.util.Scanner(System.in);
+        
+        String[][] testCategories = {
+            {"Casos básicos", "inputSmall.txt", "inputSmall2.txt", "inputSmall3.txt"},
+            {"CasosDePruebaA-Z", 
+            "CasosDePruebaA-Z/a-z500.txt",
+            "CasosDePruebaA-Z/a-z1000.txt",
+            "CasosDePruebaA-Z/a-z20000.txt",
+            "CasosDePruebaA-Z/a-z50000.txt",
+            "CasosDePruebaA-Z/a-z100000.txt"
+            },
+            {"CasosDePruebaCicero",
+            "CasosDePruebaCicero/cicero500.txt",
+            "CasosDePruebaCicero/cicero1000.txt",
+            "CasosDePruebaCicero/cicero20000.txt",
+            "CasosDePruebaCicero/cicero50000.txt",
+            "CasosDePruebaCicero/cicero100000.txt"
+            },
+            {"CasosDePruebaLiLanguages",
+            "CasosDePruebaLiLanguages/LiLang500.txt",
+            "CasosDePruebaLiLanguages/LiLang1000.txt",
+            "CasosDePruebaLiLanguages/LiLang20000.txt",
+            "CasosDePruebaLiLanguages/LiLang50000.txt",
+            "CasosDePruebaLiLanguages/LiLang100000.txt"
+            },
+            {"CasosDePruebaLoremIpsum",
+            "CasosDePruebaLoremIpsum/loremipsum500.txt",
+            "CasosDePruebaLoremIpsum/loremipsum1000.txt",
+            "CasosDePruebaLoremIpsum/loremipsum20000.txt",
+            "CasosDePruebaLoremIpsum/loremipsum50000.txt",
+            "CasosDePruebaLoremIpsum/loremipsum100000.txt"
+            }
         };
         
-        for (String fileName : testFiles) {
+        while (true) {
+            System.out.println("\n╔════════════════════════════════════════════════════════╗");
+            System.out.println("║  MENÚ DE CASOS DE PRUEBA - V3 (CON COMPARACIÓN)");
+            System.out.println("╚════════════════════════════════════════════════════════╝");
+            System.out.println("\n0. Probar TODOS los casos");
+            for (int i = 0; i < testCategories.length; i++) {
+                System.out.println((i + 1) + ". " + testCategories[i][0]);
+            }
+            System.out.println((testCategories.length + 1) + ". Salir");
+            
+            System.out.print("\nSeleccione una opción: ");
+            int opcion = scanner.nextInt();
+            
+            if (opcion == testCategories.length + 1) {
+                System.out.println("\n¡Hasta luego!");
+                break;
+            }
+            
+            if (opcion == 0) {
+                // Probar todos
+                for (String[] category : testCategories) {
+                    probarCategoriaConComparacion(category);
+                }
+            } else if (opcion >= 1 && opcion <= testCategories.length) {
+                // Probar categoría específica
+                probarCategoriaConComparacion(testCategories[opcion - 1]);
+            } else {
+                System.out.println("⚠️ Opción inválida");
+            }
+        }
+        
+        scanner.close();
+    }
+
+    // ============================================================
+    // Método auxiliar para probar una categoría con comparación
+    // ============================================================
+    private static void probarCategoriaConComparacion(String[] category) {
+        String categoryName = category[0];
+        System.out.println("\n╔════════════════════════════════════════════════════════╗");
+        System.out.println("║  " + categoryName);
+        System.out.println("╚════════════════════════════════════════════════════════╝");
+        
+        for (int i = 1; i < category.length; i++) {
+            String fileName = category[i];
             try {
-                System.out.println("========================================");
-                System.out.println("Probando: " + fileName);
-                System.out.println("========================================");
+                System.out.println("\n--- " + fileName + " ---");
                 
                 java.io.BufferedReader reader = new java.io.BufferedReader(
                     new java.io.FileReader(fileName)
@@ -281,58 +347,37 @@ public class GreatestTypographicRiverV3 {
                     continue;
                 }
                 
-                System.out.println("Longitud del texto: " + texto.length() + " caracteres");
-                
                 // ========== PRUEBA SIN SALTOS ==========
-                System.out.println("\n--- SIN Optimización 3 ---");
                 long startTime1 = System.currentTimeMillis();
                 int[] result1 = findOptimalWidthAndRiverNoJumps(texto);
                 long endTime1 = System.currentTimeMillis();
                 
-                System.out.println("Ancho óptimo: " + result1[0]);
-                System.out.println("Río más largo: " + result1[1]);
-                System.out.println("Tiempo: " + (endTime1 - startTime1) + " ms");
-                
                 // ========== PRUEBA CON SALTOS ==========
-                System.out.println("\n--- CON Optimización 3 (saltos) ---");
                 long startTime2 = System.currentTimeMillis();
                 int[] result2 = findOptimalWidthAndRiverWithJumps(texto);
                 long endTime2 = System.currentTimeMillis();
                 
-                System.out.println("Ancho óptimo: " + result2[0]);
-                System.out.println("Río más largo: " + result2[1]);
-                System.out.println("Tiempo: " + (endTime2 - startTime2) + " ms");
-                
-                // ========== COMPARACIÓN ==========
-                System.out.println("\n--- Comparación ---");
+                // ========== IMPRIMIR RESULTADO (formato V1/V2) ==========
                 long diff = (endTime1 - startTime1) - (endTime2 - startTime2);
-                double speedup = (double)(endTime1 - startTime1) / (endTime2 - startTime2);
+                double speedup = (endTime2 - startTime2) > 0 ? 
+                    (double)(endTime1 - startTime1) / (endTime2 - startTime2) : 0;
                 
-                System.out.println("Diferencia: " + diff + " ms");
-                System.out.println("Speedup: " + String.format("%.2fx", speedup));
+                System.out.println("Longitud: " + texto.length() + " chars | " +
+                                "Ancho: " + result1[0] + " | " +
+                                "Río: " + result1[1] + " | " +
+                                "Sin Opt3: " + (endTime1 - startTime1) + " ms | " +
+                                "Con Opt3: " + (endTime2 - startTime2) + " ms | " +
+                                "Speedup: " + String.format("%.2fx", speedup));
                 
+                // Verificar que ambos métodos den el mismo resultado
                 if (result1[0] != result2[0] || result1[1] != result2[1]) {
                     System.out.println("⚠️ ADVERTENCIA: Resultados diferentes!");
-                } else {
-                    System.out.println("✅ Resultados idénticos");
                 }
-                
-                // Visualización para archivos pequeños
-                if (texto.length() < 200) {
-                    System.out.println("\nVisualización con ancho óptimo:");
-                    String[][] matriz = textToMatrix(texto, result1[0]);
-                    printMatrix(matriz);
-                }
-                
-                System.out.println();
                 
             } catch (java.io.FileNotFoundException e) {
-                System.out.println("Archivo no encontrado: " + fileName);
-            } catch (java.io.IOException e) {
-                System.out.println("Error leyendo archivo: " + fileName);
-                e.printStackTrace();
+                System.out.println("⚠️ Archivo no encontrado: " + fileName);
             } catch (Exception e) {
-                System.out.println("Error procesando: " + fileName);
+                System.out.println("⚠️ Error: " + fileName);
                 e.printStackTrace();
             }
         }

@@ -130,7 +130,7 @@ public class GreatestTypographicRiverV3 {
             minWidth = Math.max(minWidth, word.length());
         }        
         int totalLength = text.length();
-        int maxWidth = Math.min(totalLength - 1, 500);        
+        int maxWidth = Math.min(totalLength - 1, 5000);        
         if (maxWidth < minWidth) {
             return new int[]{minWidth, 0};
         }        
